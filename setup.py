@@ -13,7 +13,7 @@ requirements = ["psycopg2", "python-rapidjson", "flask", "werkzeug"]
 
 setup(
     name="hou-flask-psycopg2",
-    version="version='0.0.2'",
+    version="0.0.2",
     description="Highly Opinionated Utils: Flask Psycopg2",
     long_description=readme + "\n\n" + history,
     author="Tim Martin",
