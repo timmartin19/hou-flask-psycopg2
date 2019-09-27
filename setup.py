@@ -21,6 +21,9 @@ setup(
     url="https://github.com/timmartin19/hou-flask-psycopg2",
     packages=["hou_flask_psycopg2"],
     package_dir={"hou_flask_psycopg2": "hou_flask_psycopg2"},
+    package_data={
+        "hou-flask-psycopg2": ["README.md", "HISTORY.md"]
+    },
     include_package_data=True,
     install_requires=requirements,
     zip_safe=False,
