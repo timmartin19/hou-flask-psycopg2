@@ -2,6 +2,9 @@ from typing import List, Dict
 
 from uuid import uuid4
 from psycopg2.pool import PoolError
+from psycopg2 import IntegrityError
+
+from contextlib import contextmanager
 
 from hou_flask_psycopg2 import FlaskPsycopg2
 
@@ -30,6 +33,17 @@ class TestHelper:
             f"SELECT COUNT(*) AS c FROM {table} WHERE {where_clause}", params
         )[0].c
         assert expected_count == actual_count
+
+    @contextmanager
+    def assert_integrity_error(self, error_code: str, violated_constraint: str = None):
+        try:
+            yield
+        except IntegrityError as exc:
+            assert exc.pgcode == error_code
+            if violated_constraint:
+                assert exc.diag.constraint_name == violated_constraint
+        else:
+            raise AssertionError("IntegrityError not raised")
 
 
 def database_setup(db: FlaskPsycopg2):
