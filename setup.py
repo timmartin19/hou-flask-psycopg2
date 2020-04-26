@@ -22,7 +22,8 @@ setup(
     packages=["hou_flask_psycopg2"],
     package_dir={"hou_flask_psycopg2": "hou_flask_psycopg2"},
     package_data={
-        "hou-flask-psycopg2": ["README.md", "HISTORY.md"]
+        "hou-flask-psycopg2": ["README.md", "HISTORY.md", "py.typed"],
+
     },
     include_package_data=True,
     install_requires=requirements,
