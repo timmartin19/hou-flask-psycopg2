@@ -1,7 +1,7 @@
 import itertools
 from enum import Enum
 import dataclasses
-from typing import Union, Dict, Iterable, Type, Any, List, Optional, Tuple, Generator
+from typing import Union, Dict, Iterable, Type, Any, List, Optional, Tuple, Generator, Callable
 
 import rapidjson
 from psycopg2._json import register_default_jsonb, register_default_json, Json
@@ -56,8 +56,12 @@ class Psycopg2Utils(ABC):
         dataclass: Type,
         expect_one: bool = False,
         expected_count: int = None,
+        column_conversions: Dict[str, Callable] = None,
     ) -> Any:
         rows = self._execute_query(query, params, DictCursor)
+        if column_conversions:
+            rows = (self._convert_columns(row, column_conversions) for row in rows)
+
         rows = [dataclass(**row) for row in rows]
         return self._verify_row_count(rows, expect_one, expected_count)
 
@@ -176,6 +180,12 @@ class Psycopg2Utils(ABC):
     @staticmethod
     def _build_primary_key(primary_keys: Tuple[str, ...], obj: object) -> Tuple:
         return tuple(getattr(obj, key) for key in primary_keys)
+
+    @staticmethod
+    def _convert_columns(row: Dict[str, Any], column_conversions: Dict[str, Callable]) -> Dict[str, Any]:
+        for key, converter in column_conversions.items():
+            row[key] = converter(row[key])
+        return row
 
     def _execute_query(self, query, params, factory) -> List:
         with self.cursor(factory=factory) as cur:
